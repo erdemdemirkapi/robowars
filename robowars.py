@@ -2,39 +2,50 @@ from robot import Robot
 from ability import Ability
 import random
 
-ability1 = Ability(8, 1, 1)
+def distance(d1, d2):
+    return abs(d1 - d2)
+
+def attack(attack_robot, defence_robot, distance_of_robots):
+    damage_defence_robot = (random.randint(0, 10) * attack_robot.ability.attack / distance_of_robots) - (defence_robot.ability.defence * (distance_of_robots / 10))
+    if damage_defence_robot < 0:
+        damage_defence_robot = 0
+    
+    defence_robot.energy -= damage_defence_robot
+
+def move(robot, location_of_other_robot):
+    if robot.name == 'robot1':
+        new_location = random.randint(0, location_of_other_robot - 1)
+    elif robot.name == 'robot2':
+        new_location = random.randint(location_of_other_robot + 1 , 19)
+
+    consume_energy = (distance(robot.location, new_location) / robot.ability.speed) * 5
+    robot.energy -= consume_energy
+    robot.location = new_location
+
+
+
+ability1 = Ability(6, 2, 2)
 ability2 = Ability(5, 3, 2)
 
 robot1 = Robot('robot1', ability1, 100, 0)
 robot2 = Robot('robot2', ability2, 100, 19)
 
-i = 0
 while(robot1.energy > 0 and robot2.energy > 0):
-    i += 1
-    #DAMAGE(R2) = ( RANDOM(BETWEEN 1 AND 10) * A(R1) / DISTANCE ) – (D(R2) * (DISTANCE / 10))
+    distance_of_robots = distance(robot1.location, robot2.location)
 
-    distance = abs(robot1.location - robot2.location)
+    movement_list = ['attack', 'move']
 
-    damage_r2 = (random.randint(0, 10) * robot1.ability.attack / distance) - (robot2.ability.defence * (distance / 10))
-    if damage_r2 < 0:
-        damage_r2 = 0
-    
-    robot2.energy -= damage_r2
-    print(robot2.energy)
+    movement = random.choice(movement_list)
+    if movement == 'attack':
+        attack(robot1, robot2, distance_of_robots)
+    elif movement == 'move':
+        move(robot1, robot2.location)
 
-    damage_r1 = (random.randint(0, 10) * robot2.ability.attack / distance) - (robot1.ability.defence * (distance / 10))
-    if damage_r1 < 0:
-        damage_r1 = 0
-
-    robot1.energy -= damage_r1
-    print(robot1.energy)
-
-
-    #robot1.energy = 0
-
-print('total step: ', i)
-
-
+    movement = random.choice(movement_list)
+    if movement == 'attack':
+        attack(robot2, robot1, distance_of_robots)
+    elif movement == 'move':
+        move(robot2, robot1.location)
 
 if robot1.energy <= 0:
     print('Winner: ', robot2.name)
