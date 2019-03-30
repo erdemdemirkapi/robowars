@@ -3,6 +3,9 @@ from ability import Ability
 import random
 
 import tkinter as tk
+from tkinter import messagebox
+from PIL import Image,ImageTk
+from time import sleep
 
 def distance(d1, d2):
     return abs(d1 - d2)
@@ -26,92 +29,117 @@ def move(robot, location_of_other_robot):
 
 root = tk.Tk()
 
-canvas = tk.Canvas(root, height = 400, width = 700)
+canvas = tk.Canvas(root, height = 400, width = 620)
 canvas.pack()
 
 enter_ability_label = tk.Label(root, text = "Enter abilities: ")
 enter_ability_label.place(x = 10, y = 40)
 
+attack1 = tk.IntVar()
 attack_label = tk.Label(root, text = "Attack")
 attack_label.place(x = 120, y = 5)
-attack_input1 = tk.Entry(width = 5)
+attack_input1 = tk.Entry(width = 5, textvariable = attack1)
 attack_input1.place(x = 120, y = 25)
 
+defence1 = tk.IntVar()
 defence_label = tk.Label(root, text = "Defence")
 defence_label.place(x = 190, y = 5)
-defence_input1 = tk.Entry(width = 5)
+defence_input1 = tk.Entry(width = 5, textvariable = defence1)
 defence_input1.place(x = 190, y = 25)
 
+speed1 = tk.IntVar()
 speed_label = tk.Label(root, text = "Speed")
 speed_label.place(x = 260, y = 5)
-speed_input1 = tk.Entry(width = 5)
+speed_input1 = tk.Entry(width = 5, textvariable = speed1)
 speed_input1.place(x = 260, y = 25)
 
+attack2 = tk.IntVar()
 attack_label = tk.Label(root, text = "Attack")
 attack_label.place(x = 120, y = 60)
-attack_input2 = tk.Entry(width = 5)
+attack_input2 = tk.Entry(width = 5, textvariable = attack2)
 attack_input2.place(x = 120, y = 60)
 
+defence2 = tk.IntVar()
 defence_label = tk.Label(root, text = "Defence")
 defence_label.place(x = 190, y = 60)
-defence_input2 = tk.Entry(width = 5)
+defence_input2 = tk.Entry(width = 5, textvariable = defence2)
 defence_input2.place(x = 190, y = 60)
 
+speed2 = tk.IntVar()
 speed_label = tk.Label(root, text = "Speed")
 speed_label.place(x = 260, y = 60)
-speed_input2 = tk.Entry(width = 5)
+speed_input2 = tk.Entry(width = 5, textvariable = speed2)
 speed_input2.place(x = 260, y = 60)
 
-def set_robot_ability():
-    attack1_string = attack_input1.get()
-    attack1_int = int(attack1_string)
-    defence1_string = defence_input1.get()
-    defence1_int = int(defence1_string)
-    speed1_string = speed_input1.get()
-    speed1_int = int(speed1_string)
+def attributes_checked():
+    sum1 = attack1.get() + defence1.get() + speed1.get()
+    sum2 = attack2.get() + defence2.get() + speed2.get()
 
-    attack2_string = attack_input2.get()
-    attack2_int = int(attack2_string)
-    defence2_string = defence_input2.get()
-    defence2_int = int(defence2_string)
-    speed2_string = speed_input2.get()
-    speed2_int = int(speed2_string)
-    
-    ability1 = Ability(attack1_int, defence1_int, speed1_int)
-    ability2 = Ability(attack2_int, defence2_int, speed2_int)
-    
-    return ability1, ability2
+    if attack1.get() == 0 or defence1.get() == 0 or speed1.get() == 0 or attack2.get() == 0 or defence2.get() == 0 or speed2.get() == 0:
+        messagebox.showinfo("Warning", "Each attributes should grater than 0. Please try again!")
+    elif sum1 != 10 or sum2 != 10:
+        messagebox.showinfo("Warning", "Sum of attributes should be 10 for each robots. Please try again!")
+    else:
+        return True
 
-save_button = tk.Button(root, text ="Save", command = set_robot_ability, bg = '#80c1ff')
+def start_game():
+    if True or attributes_checked():
+        print('Game started!')
+
+        ability1 = Ability(attack1.get(), defence1.get(), speed1.get())
+        ability2 = Ability(attack2.get(), defence2.get(), speed2.get())
+
+        robot1 = Robot('robot1', ability1, 100, 0)
+        robot2 = Robot('robot2', ability2, 100, 19)
+
+        img1 = ImageTk.PhotoImage(Image.open("robot1.png").resize((100, 100), Image.ANTIALIAS))
+        robot1_label = tk.Label(root, image = img1)
+        robot1_label.place(x = 10, y = 140)
+        robot1_energy_label = tk.Label(root, text = "Energy " + str(robot1.energy))
+        robot1_energy_label.place(x = 10, y = 130)
+        
+        img2 = ImageTk.PhotoImage(Image.open("robot2.png").resize((100, 100), Image.ANTIALIAS))
+        robot2_label = tk.Label(root, image = img2)
+        robot2_label.place(x = 485, y = 140)
+        robot2_energy_label = tk.Label(root, text = "Energy " + str(robot2.energy))
+        robot2_energy_label.place(x = 485, y = 130)
+
+        while(robot1.energy > 0 and robot2.energy > 0):
+
+            distance_of_robots = distance(robot1.location, robot2.location)
+
+            movement_list = ['attack', 'move']
+
+            movement = random.choice(movement_list)
+            if movement == 'attack':
+                attack(robot1, robot2, distance_of_robots)
+            elif movement == 'move':
+                move(robot1, robot2.location)
+
+            movement = random.choice(movement_list)
+            if movement == 'attack':
+                attack(robot2, robot1, distance_of_robots)
+            elif movement == 'move':
+                move(robot2, robot1.location)
+
+            root.update()
+            robot1_energy_label = tk.Label(root, text = "Energy " + str(robot1.energy))
+            robot1_energy_label.place(x = 10, y = 130)
+
+            robot2_energy_label = tk.Label(root, text = "Energy " + str(robot2.energy))
+            robot2_energy_label.place(x = 485, y = 130)
+
+            sleep(1)
+
+        if robot1.energy <= 0:
+            print('Winner: ', robot2.name)
+        elif robot2.energy <= 0:
+            print('Winner: ', robot1.name)
+
+    else:
+        print('Failed to start game!')
+
+save_button = tk.Button(root, text ="Start Game", command = start_game, bg = '#80c1ff')
 save_button.place(x = 330, y = 40)
-
-ability1 = Ability(6, 2, 2)
-ability2 = Ability(5, 3, 2)
-
-robot1 = Robot('robot1', ability1, 100, 0)
-robot2 = Robot('robot2', ability2, 100, 19)
-
-while(robot1.energy > 0 and robot2.energy > 0):
-    distance_of_robots = distance(robot1.location, robot2.location)
-
-    movement_list = ['attack', 'move']
-
-    movement = random.choice(movement_list)
-    if movement == 'attack':
-        attack(robot1, robot2, distance_of_robots)
-    elif movement == 'move':
-        move(robot1, robot2.location)
-
-    movement = random.choice(movement_list)
-    if movement == 'attack':
-        attack(robot2, robot1, distance_of_robots)
-    elif movement == 'move':
-        move(robot2, robot1.location)
-
-if robot1.energy <= 0:
-    print('Winner: ', robot2.name)
-elif robot2.energy <= 0:
-    print('Winner: ', robot1.name)
-
 
 root.mainloop()
