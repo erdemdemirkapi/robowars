@@ -83,7 +83,7 @@ def attributes_checked():
         return True
 
 def start_game():
-    if True or attributes_checked():
+    if attributes_checked():
         print('Game started!')
 
         ability1 = Ability(attack1.get(), defence1.get(), speed1.get())
