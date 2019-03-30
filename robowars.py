@@ -94,15 +94,15 @@ def start_game():
 
         img1 = ImageTk.PhotoImage(Image.open("robot1.png").resize((100, 100), Image.ANTIALIAS))
         robot1_label = tk.Label(root, image = img1)
-        robot1_label.place(x = 10, y = 140)
+        robot1_label.place(x = (robot1.location * 25) + 10, y = 140)
         robot1_energy_label = tk.Label(root, text = "Energy " + str(robot1.energy))
-        robot1_energy_label.place(x = 10, y = 130)
+        robot1_energy_label.place(x = (robot1.location * 25) + 10, y = 130)
         
         img2 = ImageTk.PhotoImage(Image.open("robot2.png").resize((100, 100), Image.ANTIALIAS))
         robot2_label = tk.Label(root, image = img2)
-        robot2_label.place(x = 485, y = 140)
+        robot2_label.place(x = (robot2.location * 25) + 10, y = 140)
         robot2_energy_label = tk.Label(root, text = "Energy " + str(robot2.energy))
-        robot2_energy_label.place(x = 485, y = 130)
+        robot2_energy_label.place(x = (robot2.location * 25) + 10, y = 130)
 
         while(robot1.energy > 0 and robot2.energy > 0):
 
@@ -116,6 +116,7 @@ def start_game():
             elif movement == 'move':
                 move(robot1, robot2.location)
 
+
             movement = random.choice(movement_list)
             if movement == 'attack':
                 attack(robot2, robot1, distance_of_robots)
@@ -123,13 +124,18 @@ def start_game():
                 move(robot2, robot1.location)
 
             root.update()
+
+            robot1_label.place(x = (robot1.location * 25) + 10, y = 140)
+            robot1_label.configure(image = img1)
             robot1_energy_label = tk.Label(root, text = "Energy " + str(robot1.energy))
             robot1_energy_label.place(x = 10, y = 130)
 
+            robot2_label.place(x = (robot2.location * 25) + 10, y = 140)
+            robot2_label.configure(image = img2)
             robot2_energy_label = tk.Label(root, text = "Energy " + str(robot2.energy))
             robot2_energy_label.place(x = 485, y = 130)
 
-            sleep(1)
+            sleep(0.2)
 
         if robot1.energy <= 0:
             print('Winner: ', robot2.name)
