@@ -139,8 +139,15 @@ def start_game():
 
         if robot1.energy <= 0:
             print('Winner: ', robot2.name)
+            winner_label = tk.Label(root, text = "Winner " + robot2.name)
+            winner_label.config(font=("Courier", 44))
+            winner_label.place(x = 200, y = 200, anchor = "center")
+            
         elif robot2.energy <= 0:
             print('Winner: ', robot1.name)
+            winner_label = tk.Label(root, text = "Winner " + robot1.name)
+            winner_label.config(font=("Courier", 44))
+            winner_label.place(x = 200, y = 200, anchor="center")
 
     else:
         print('Failed to start game!')
